@@ -1,0 +1,21 @@
+/* Jendela chat */
+.chat { flex: 1; min-height: 0; margin: 2px; display: flex; flex-direction: column; gap: 4px; }
+.chat-log {
+  flex: 1; min-height: 0; overflow: auto; padding: 8px; background: #fff; border: 1px solid #8a8f98;
+  font: 12px/1.5 Tahoma, "MS Sans Serif", sans-serif; color: #000;
+}
+.chat-log p { margin: 0 0 6px; overflow-wrap: anywhere; }
+.chat-log .me b { color: #000080; }
+.chat-log .them { color: #2a3550; }
+.chat-log .them b { color: #7a1f5c; }
+.chat-hint { color: #888; }
+.chat-send { display: flex; gap: 4px; }
+.chat-send input {
+  flex: 1; min-width: 0; padding: 3px 4px; background: #fff; border: 1px solid #8a8f98;
+  box-shadow: inset 1px 1px #9aa0a8; outline: none; font: 12px Tahoma, sans-serif;
+}
+.chat-send button {
+  padding: 2px 12px; font: 12px Tahoma, sans-serif; color: #000; background: #e4e6ea;
+  border: 1px solid #8a8f98; box-shadow: inset 1px 1px #fff; cursor: inherit;
+}
+.chat-send button:disabled { color: #888; }
