@@ -16,17 +16,18 @@ export type FsNode = {
 // Semua ikon ada di sini. Ganti emoji dengan path PNG kalau mau (taruh di /public/icons).
 export const ICONS = {
   desktop: "🖥️",
-  computer: "🖥️",
-  documents: "📁",
-  folder: "📁",
-  network: "🖧",
-  recycle: "🗑️",
+  computer: "/icons/computer.ico",
+  documents: "/icons/FolderClosed.png",
+  folder: "/icons/FolderClosed.png",
+  folderOpen: "/icons/FolderOpened.png",
+  network: "/icons/network_neighborhood.ico",
+  recycle: "/icons/RecycleFileFolder.png",
   drive: "💽",
   floppy: "💾",
   cd: "💿",
   text: "📄",
-  ie: "🌐",
-  shortcut: "🔗",
+  ie: "/icons/internet_explorer.ico",
+  shortcut: "/icons/Attach.png",
 };
 
 export const DEFAULT_DATE = "08/23/2003 4:12 PM";

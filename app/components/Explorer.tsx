@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import PopupWindow, { Ico } from "./PopupWindow";
-import { ROOT, DEFAULT_DATE, addrOf, getNode, isFolder, type FsNode } from "./fs";
+import { ICONS, ROOT, DEFAULT_DATE, addrOf, getNode, isFolder, type FsNode } from "./fs";
 import "./Explorer.css";
 
 const prefixes = (p: string[]) => p.map((_, i) => p.slice(0, i + 1).join("/"));
@@ -30,7 +30,7 @@ function TreeNode({ node, path, cur, open, toggle, go, depth }: TreeProps) {
           <span className="xp-tog xp-tog-none" />
         )}
         <span className="xp-lbl" onClick={() => go(path)}>
-          <Ico src={node.icon} size={16} />
+          <Ico src={isOpen && node.icon === ICONS.folder ? ICONS.folderOpen : node.icon} size={16} />
           <span className="nm">{node.name}</span>
         </span>
       </div>
