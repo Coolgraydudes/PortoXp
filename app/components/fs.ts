@@ -21,7 +21,7 @@ export const ICONS = {
   folder: "/icons/FolderClosed.png",
   folderOpen: "/icons/FolderOpened.png",
   network: "/icons/network_neighborhood.ico",
-  recycle: "/icons/RecycleFileFolder.png",
+  recycle: "/icons/RecycleFilefolder.png",
   drive: "💽",
   floppy: "💾",
   cd: "💿",

@@ -259,9 +259,9 @@ But for now, someone has opened the window.
 
 And you are happy to have someone to talk to.`;
 
-const DAY = "Right now it is daytime on the hill: warm, nostalgic, a little sleepy.";
+const DAY = "Context: it is daytime for the visitor right now. the hill outside is bright.";
 const NIGHT =
-  "Right now it is night on the hill: quieter, a little uncanny, as if someone stands far away on the hilltop, watching kindly. Never threatening.";
+  "Context: it is night for the visitor right now. the hill outside looks different tonight.";
 
 // Dipakai kalau jatah gratis habis / Groq lagi sibuk, supaya chat tetap "hidup".
 const FALLBACK = [
@@ -299,7 +299,7 @@ export async function POST(req: NextRequest) {
         typeof m.content === "string" &&
         m.content.trim() !== ""
     )
-    .slice(-12)
+    .slice(-10)
     .map((m) => ({ role: m.role, content: m.content.slice(0, 500) }));
   while (messages.length && messages[0].role !== "user") messages.shift();
   if (!messages.length) return NextResponse.json({ error: "bad_request" }, { status: 400 });
@@ -310,8 +310,8 @@ export async function POST(req: NextRequest) {
       headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
       body: JSON.stringify({
         model: MODEL,
-        max_completion_tokens: 1500, // gpt-oss "berpikir" dulu; token berpikir ikut terhitung
-        reasoning_effort: "low",
+        max_completion_tokens: 800, // gpt-oss "berpikir" dulu; token berpikir ikut terhitung
+        ...(MODEL.includes("gpt-oss") ? { reasoning_effort: "low" } : {}), // hanya valid untuk model gpt-oss
         temperature: 0.8,
         messages: [
           { role: "system", content: `${PERSONA}\n\n${body.time === "night" ? NIGHT : DAY}` },
