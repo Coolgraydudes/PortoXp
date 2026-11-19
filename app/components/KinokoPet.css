@@ -1,0 +1,99 @@
+/* Kinoko, peliharaan desktop */
+.k-layer { position: fixed; inset: 0; z-index: 9; pointer-events: none; overflow: hidden; }
+.k-box {
+  position: absolute; left: 0; top: 0; pointer-events: auto; touch-action: none; user-select: none;
+  cursor: grab; will-change: transform;
+}
+.k-box.k-drag { cursor: grabbing; }
+
+.k-shadow {
+  position: absolute; left: 50%; bottom: -3px; width: calc(var(--k, 1) * 58px); height: 9px;
+  transform: translateX(-50%); border-radius: 50%; pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.38), rgba(0,0,0,0) 70%);
+}
+.k-hop { position: relative; transform-origin: 50% 100%; }
+.k-spr {
+  background: url("/pet/kinoko.png") 0 0 no-repeat; transform-origin: 50% 100%;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.28)); pointer-events: none;
+}
+.k-hop.goA { animation: kHopA .55s ease-out; }
+.k-hop.goB { animation: kHopB .55s ease-out; }
+@keyframes kHopA {
+  0% { transform: translateY(0) scale(1, 1); } 15% { transform: translateY(0) scale(1.12, .86); }
+  50% { transform: translateY(-26px) scale(.95, 1.07); } 82% { transform: translateY(0) scale(1.1, .9); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+@keyframes kHopB {
+  0% { transform: translateY(0) scale(1, 1); } 15% { transform: translateY(0) scale(1.12, .86); }
+  50% { transform: translateY(-26px) scale(.95, 1.07); } 82% { transform: translateY(0) scale(1.1, .9); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+
+.k-box.k-scared .k-spr { animation: kShake .09s linear infinite; }
+@keyframes kShake { 0% { translate: -2px 0; } 50% { translate: 2px 0; } 100% { translate: -2px 0; } }
+.k-box.k-sleep .k-spr { filter: brightness(.82) saturate(.85) drop-shadow(0 1px 1px rgba(0,0,0,.28)); }
+.k-box.k-drag .k-shadow { opacity: .35; }
+
+.k-ring {
+  position: absolute; left: 50%; bottom: -6px; width: 30px; height: 12px; margin-left: -15px;
+  border: 2px solid rgba(255,255,255,.85); border-radius: 50%; pointer-events: none;
+  animation: kRing .7s ease-out forwards;
+}
+@keyframes kRing { to { transform: scale(5, 4); opacity: 0; } }
+
+.k-zzz { position: absolute; left: 62%; top: -6px; font: bold 13px Tahoma, sans-serif; color: #fff; text-shadow: 1px 1px 2px #000; pointer-events: none; }
+.k-zzz i, .k-zzz b { font-style: normal; display: inline-block; margin-left: 2px; animation: kZ 2.4s ease-in-out infinite; }
+.k-zzz i { animation-delay: .5s; font-size: 15px; }
+.k-zzz b { animation-delay: 1s; font-size: 18px; }
+@keyframes kZ { 0%, 100% { opacity: .2; transform: translateY(4px); } 50% { opacity: 1; transform: translateY(-4px); } }
+
+/* gelembung ucapan ala tooltip jaman dulu */
+.k-bubble {
+  position: absolute; left: 50%; bottom: calc(100% + 8px); width: max-content; max-width: 220px;
+  transform: translateX(calc(-50% + var(--bs, 0px)));
+  padding: 4px 7px; background: #ffffe1; color: #000; border: 1px solid #000;
+  box-shadow: 2px 2px 0 rgba(0,0,0,.28); font: 12px/1.4 Tahoma, "MS Sans Serif", sans-serif;
+  overflow-wrap: anywhere; cursor: default; pointer-events: auto;
+}
+.k-bubble::after {
+  content: ""; position: absolute; left: calc(50% - var(--bs, 0px)); bottom: -6px; width: 9px; height: 9px;
+  background: #ffffe1; border: solid #000; border-width: 0 1px 1px 0; transform: translateX(-50%) rotate(45deg);
+}
+
+/* kotak ngobrol */
+.k-bubble.k-chat { width: 240px; max-width: 240px; padding: 2px; background: #e4e6ea; border: 1px solid #8a8f98; box-shadow: inset 1px 1px #fff, 3px 3px 0 rgba(0,0,0,.3); }
+.k-bubble.k-chat::after { background: #e4e6ea; border-color: #8a8f98; }
+.k-chat-head {
+  display: flex; align-items: center; justify-content: space-between; padding: 2px 3px 2px 6px;
+  color: #fff; font-weight: bold; background: linear-gradient(90deg, #0a246a, #3a6ea5);
+}
+.k-chat-head button {
+  width: 16px; height: 14px; padding: 0; font: bold 12px/1 Tahoma, sans-serif; color: #000;
+  background: #e4e6ea; border: 1px solid #8a8f98; box-shadow: inset 1px 1px #fff; cursor: inherit;
+}
+.k-log {
+  max-height: 130px; min-height: 48px; overflow: auto; margin: 2px 0; padding: 6px 7px; background: #fff;
+  border: 1px solid #8a8f98; color: #000;
+}
+.k-log p { margin: 0 0 5px; }
+.k-log .me b { color: #000080; }
+.k-log .them { color: #2a3550; }
+.k-log .them b { color: #a3324a; }
+.k-send { display: flex; gap: 4px; }
+.k-send input {
+  flex: 1; min-width: 0; padding: 3px 4px; background: #fff; border: 1px solid #8a8f98;
+  box-shadow: inset 1px 1px #9aa0a8; outline: none; font: 12px Tahoma, sans-serif;
+}
+.k-send button {
+  padding: 2px 10px; font: 12px Tahoma, sans-serif; color: #000; background: #e4e6ea;
+  border: 1px solid #8a8f98; box-shadow: inset 1px 1px #fff; cursor: inherit;
+}
+.k-send button:disabled { color: #888; }
+.k-link {
+  display: block; margin: 4px 2px 2px; padding: 0; background: none; border: 0; color: #0000ee;
+  font: 11px Tahoma, sans-serif; text-decoration: underline; cursor: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .k-hop.goA, .k-hop.goB, .k-ring, .k-zzz i, .k-zzz b { animation: none; }
+}

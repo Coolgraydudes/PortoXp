@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import PopupWindow from "./PopupWindow";
+import { emit, on, usePetInstalled } from "./bus";
 import "./ChatSearch.css";
 
 type Msg = { role: "user" | "assistant"; content: string; err?: boolean };
@@ -15,10 +16,17 @@ export default function ChatSearch() {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [busy, setBusy] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
+  const petInstalled = usePetInstalled();
 
   useEffect(() => {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
   }, [msgs, busy, open]);
+
+  // kabari Kinoko kalau Messenger dibuka, dan buka Messenger kalau Kinoko memintanya
+  useEffect(() => {
+    if (open) emit("chat:opened");
+  }, [open]);
+  useEffect(() => on("messenger:open", () => setOpen(true)), []);
 
   const send = async (text: string) => {
     const content = text.trim().slice(0, 500);
@@ -27,6 +35,7 @@ export default function ChatSearch() {
     setMsgs(next);
     setOpen(true);
     setBusy(true);
+    emit("chat:user", { text: content });
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -34,11 +43,13 @@ export default function ChatSearch() {
         body: JSON.stringify({
           messages: next.filter((m) => !m.err).map(({ role, content }) => ({ role, content })),
           time: document.documentElement.dataset.time === "night" ? "night" : "day",
+          pet: petInstalled, // kasih tahu AI kalau Kinoko ada di desktop
         }),
       });
       const data = await res.json();
       if (!res.ok || !data.reply) throw new Error(data.error ?? "failed");
       setMsgs([...next, { role: "assistant", content: data.reply }]);
+      emit("chat:reply", { text: data.reply });
     } catch (err) {
       const code = err instanceof Error ? err.message : "";
       setMsgs([
@@ -126,4 +137,4 @@ export default function ChatSearch() {
       )}
     </>
   );
-} 
+}
