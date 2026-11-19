@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import Browser from "./Browser";
 import Explorer from "./Explorer";
 import PopupWindow, { Ico } from "./PopupWindow";
-import { ICONS } from "./fs";
+import { emit, on } from "./bus";
+import { ICONS, getNode } from "./fs";
+import { TARGETS } from "./targets";
 
 type Entry = { label: string; icon: string; open?: string[]; compact?: boolean; text?: string; browser?: boolean };
 type WinData = { id: number; title: string; icon: string; x: number; y: number; z: number; text?: string; image?: string; explorer?: string[]; compact?: boolean; browser?: boolean };
@@ -48,6 +50,28 @@ export default function DesktopIcons() {
     const z = ++topZ.current;
     setWins((ws) => [...ws, { ...data, id, x, y, z }]);
   };
+
+  // dipanggil Kinoko lewat event "desktop:open" (hanya id yang ada di targets.ts)
+  const openTarget = (id: string) => {
+    const t = TARGETS[id]?.t;
+    if (!t) return;
+    if (t.kind === "entry") {
+      const e = ENTRIES.find((x) => x.label === t.label);
+      if (e) openEntry(e);
+    } else if (t.kind === "folder") {
+      open({ title: t.title, icon: t.drive ? ICONS.drive : ICONS.folder, explorer: t.path });
+    } else if (t.kind === "file") {
+      const n = getNode(t.path);
+      if (n) open({ title: n.name, icon: n.icon, text: n.text ?? "", image: n.image });
+    } else if (t.kind === "messenger") {
+      emit("messenger:open");
+    } else if (t.kind === "closeAll") {
+      setWins([]);
+    }
+  };
+  const openTargetRef = useRef(openTarget);
+  openTargetRef.current = openTarget; // selalu versi terbaru (supaya tidak memakai daftar jendela yang basi)
+  useEffect(() => on("desktop:open", (d) => openTargetRef.current(String((d as { id?: string } | undefined)?.id ?? ""))), []);
 
   const openEntry = (e: Entry) =>
     e.browser

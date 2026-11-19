@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { emit, on, takeFresh, usePetInstalled } from "./bus";
+import { findTag, localCommand, stripTags } from "./targets";
 import "./KinokoPet.css";
 
 /* ============================================================
@@ -71,7 +72,7 @@ const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 const isNight = () => typeof document !== "undefined" && document.documentElement.dataset.time === "night";
 
-type ChatMsg = { role: "user" | "assistant"; content: string; local?: boolean };
+type ChatMsg = { role: "user" | "assistant"; content: string; raw?: string; local?: boolean }; // raw = balasan asli AI (dengan tag), content = yang ditampilkan
 
 export default function KinokoPet() {
   const installed = usePetInstalled();
@@ -173,12 +174,21 @@ function Pet() {
     if (!el || !spr) return;
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
     let raf = 0;
-    let last = performance.now();
+    let last = performance.now() - 1000; // supaya frame pertama langsung jalan (tidak sempat tampil di pojok 0,0)
+
+    // nilai terakhir yang ditulis ke DOM: kalau tidak berubah, tidak perlu ditulis lagi
+    const w = { a: "", b: "", k: "", bs: "" };
 
     const tick = (now: number) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
       const s = S.current;
+      // hemat CPU: saat diam cukup ~11 fps, saat jalan ~30 fps, hanya saat jatuh/diseret 60 fps
+      const gap = s.mode === "fall" || s.mode === "drag" ? 0 : s.mode === "walk" ? 30 : 90;
+      if (now - last < gap) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      const dt = Math.min(gap ? 0.15 : 0.05, (now - last) / 1000);
+      last = now;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const top = Math.max(vh * 0.7, 260);
@@ -290,12 +300,16 @@ function Pet() {
       // posisi, skala (makin ke bawah makin besar), arah
       const depth = clamp((s.y - top) / Math.max(1, bot - top), 0, 1);
       const k = 0.82 + 0.38 * depth;
-      el.style.transform = `translate3d(${s.x - FW / 2}px, ${s.y - FH}px, 0)`;
-      spr.style.transform = `scale(${k}) scaleX(${s.dir})`;
-      el.style.setProperty("--k", String(k));
+      const a = `translate3d(${(s.x - FW / 2).toFixed(1)}px, ${(s.y - FH).toFixed(1)}px, 0)`;
+      if (a !== w.a) el.style.transform = w.a = a;
+      const b = `scale(${k.toFixed(3)}) scaleX(${s.dir})`;
+      if (b !== w.b) spr.style.transform = w.b = b;
+      const kk = k.toFixed(3);
+      if (kk !== w.k) el.style.setProperty("--k", (w.k = kk));
       const half = 122;
       const shift = s.x < half + 8 ? half + 8 - s.x : s.x > vw - half - 8 ? -(s.x - (vw - half - 8)) : 0;
-      el.style.setProperty("--bs", `${shift}px`);
+      const bs = `${Math.round(shift)}px`;
+      if (bs !== w.bs) el.style.setProperty("--bs", (w.bs = bs));
 
       raf = requestAnimationFrame(tick);
     };
@@ -424,6 +438,16 @@ function Pet() {
   const send = async (text: string) => {
     const content = text.trim().slice(0, 300);
     if (!content || busy) return;
+
+    // perintah langsung ("buka my documents") dijalankan tanpa AI: instan dan hemat kuota
+    const cmd = localCommand(content);
+    if (cmd) {
+      setMsgs([...msgs, { role: "user", content }, { role: "assistant", content: cmd.line, local: true }]);
+      doHop();
+      setTimeout(() => emit("desktop:open", { id: cmd.id }), 350);
+      return;
+    }
+
     const next: ChatMsg[] = [...msgs, { role: "user", content }];
     setMsgs(next);
     setBusy(true);
@@ -434,13 +458,19 @@ function Pet() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           who: "pet",
-          messages: next.filter((m) => !m.local).map(({ role, content }) => ({ role, content })),
+          messages: next.filter((m) => !m.local).map((m) => ({ role: m.role, content: m.raw ?? m.content })),
           time: isNight() ? "night" : "day",
         }),
       });
       const data = await res.json();
       if (!res.ok || !data.reply) throw new Error(data.error ?? "failed");
-      setMsgs([...next, { role: "assistant", content: String(data.reply) }]);
+      const raw = String(data.reply);
+      const openId = findTag(raw); // AI minta buka sesuatu: [[open:id]]
+      setMsgs([...next, { role: "assistant", content: stripTags(raw) || "puk.", raw }]);
+      if (openId) {
+        doHop();
+        setTimeout(() => emit("desktop:open", { id: openId }), 450);
+      }
       if (ENTITY_RX.test(content)) {
         setMode("scared");
         setTimeout(() => chatOpenRef.current && S.current.mode === "scared" && setMode("talk"), 2500);

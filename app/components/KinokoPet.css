@@ -13,8 +13,8 @@
 }
 .k-hop { position: relative; transform-origin: 50% 100%; }
 .k-spr {
-  background: url("/pet/kinoko.png") 0 0 no-repeat; transform-origin: 50% 100%;
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,.28)); pointer-events: none;
+  background: url("/pet/kinoko.webp") 0 0 no-repeat; transform-origin: 50% 100%;
+  pointer-events: none; /* bayangan sudah ada di .k-shadow; filter drop-shadow dibuang karena berat untuk sprite yang bergerak */
 }
 .k-hop.goA { animation: kHopA .55s ease-out; }
 .k-hop.goB { animation: kHopB .55s ease-out; }
@@ -31,7 +31,7 @@
 
 .k-box.k-scared .k-spr { animation: kShake .09s linear infinite; }
 @keyframes kShake { 0% { translate: -2px 0; } 50% { translate: 2px 0; } 100% { translate: -2px 0; } }
-.k-box.k-sleep .k-spr { filter: brightness(.82) saturate(.85) drop-shadow(0 1px 1px rgba(0,0,0,.28)); }
+.k-box.k-sleep .k-spr { filter: brightness(.82) saturate(.85); }
 .k-box.k-drag .k-shadow { opacity: .35; }
 
 .k-ring {

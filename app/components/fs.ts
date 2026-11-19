@@ -76,8 +76,8 @@ export const ROOT: FsNode = {
               name: "Pictures",
               icon: ICONS.folder,
               children: [
-                img("Vintage Countryside Tree and Clouds.png", "/bg-day.png", "2.2 MB"),
-                img("Midnight Hill's Hidden Watcher.png", "/bg-night.png", "2.1 MB"),
+                img("Vintage Countryside Tree and Clouds.png", "/bg-day.webp", "2.2 MB"),
+                img("Midnight Hill's Hidden Watcher.png", "/bg-night.webp", "2.1 MB"),
               ],
             },
             {
