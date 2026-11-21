@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import PopupWindow from "./PopupWindow";
 import { emit, on, usePetInstalled } from "./bus";
+import { nextOrder, nextZ, setGroup } from "./wm";
 import "./ChatSearch.css";
 
 type Msg = { role: "user" | "assistant"; content: string; err?: boolean };
@@ -17,6 +18,16 @@ export default function ChatSearch() {
   const [busy, setBusy] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
   const petInstalled = usePetInstalled();
+  const [min, setMin] = useState(false); // di-minimize (masih ada di taskbar)
+  const [z, setZ] = useState(50);
+  const tRef = useRef(0);
+
+  // munculkan / bawa ke depan / keluarkan dari minimize
+  const showChat = () => {
+    setOpen(true);
+    setMin(false);
+    setZ(nextZ());
+  };
 
   useEffect(() => {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
@@ -26,14 +37,32 @@ export default function ChatSearch() {
   useEffect(() => {
     if (open) emit("chat:opened");
   }, [open]);
-  useEffect(() => on("messenger:open", () => setOpen(true)), []);
+  useEffect(() => on("messenger:open", showChat), []);
+
+  // laporkan ke taskbar + terima perintah dari taskbar
+  useEffect(() => {
+    if (open && !tRef.current) tRef.current = nextOrder();
+    if (!open) tRef.current = 0;
+    setGroup("chat", open ? [{ key: "messenger", title: "Messenger", icon: "💬", z, min, t: tRef.current }] : []);
+  }, [open, z, min]);
+  useEffect(() => () => setGroup("chat", []), []);
+  useEffect(() => {
+    const mine = (d: unknown) => (d as { key?: string } | undefined)?.key === "messenger";
+    const offs = [
+      on("wm:focus", (d) => mine(d) && showChat()),
+      on("wm:restore", (d) => mine(d) && showChat()),
+      on("wm:minimize", (d) => mine(d) && setMin(true)),
+      on("wm:closeall", () => setOpen(false)),
+    ];
+    return () => offs.forEach((o) => o());
+  }, []);
 
   const send = async (text: string) => {
     const content = text.trim().slice(0, 500);
     if (!content || busy) return;
     const next: Msg[] = [...msgs, { role: "user", content }];
     setMsgs(next);
-    setOpen(true);
+    showChat();
     setBusy(true);
     emit("chat:user", { text: content });
     try {
@@ -77,7 +106,7 @@ export default function ChatSearch() {
     if (cmd) {
       setQ("");
       if (cmd[1]) send(cmd[1]);
-      else setOpen(true);
+      else showChat();
       return;
     }
     if (v) window.open(`https://www.google.com/search?q=${encodeURIComponent(v)}`, "_blank", "noopener");
@@ -102,9 +131,11 @@ export default function ChatSearch() {
       {open && (
         <div className="windows">
           <PopupWindow
-            w={{ id: 0, title: "Messenger", icon: "💬", x: Math.max(8, window.innerWidth - 440), y: 130, z: 50 }}
-            onFocus={() => {}}
+            w={{ id: 0, title: "Messenger", icon: "💬", x: Math.max(8, window.innerWidth - 440), y: 130, z }}
+            onFocus={() => setZ(nextZ())}
             onClose={() => setOpen(false)}
+            minimized={min}
+            onMinimize={() => setMin(true)}
             onOpenFile={() => {}}
           >
             <div className="chat">

@@ -1,0 +1,85 @@
+.lk {
+  position: fixed; inset: 0; z-index: 900; overflow: hidden; color: #fff; cursor: default; display: flex; flex-direction: column;
+  font-family: "Trebuchet MS", "Franklin Gothic Medium", Tahoma, sans-serif; background: #5a7edc;
+  background-image: radial-gradient(circle at 18% 20%, #7e9ff0 0, transparent 45%), radial-gradient(circle at 85% 85%, #4768c8 0, transparent 50%);
+  transition: opacity .7s ease;
+}
+.lk.out { opacity: 0; pointer-events: none; }
+
+/* pita atas & bawah */
+.lk-top { height: 12vh; min-height: 70px; flex: none; background: #00309c; border-bottom: 2px solid transparent; border-image: linear-gradient(90deg, #00309c, #fff 50%, #00309c) 1; }
+.lk-bot { position: absolute; left: 0; right: 0; bottom: 0; height: 13vh; min-height: 78px; background: #003399; border-top: 2px solid transparent; border-image: linear-gradient(90deg, #003399, #e8892b 50%, #003399) 1; z-index: 0; }
+
+/* bagian tengah */
+.lk-main { flex: 1; display: grid; grid-template-columns: 1fr 2px 1fr; align-items: center; position: relative; z-index: 1; padding-bottom: 13vh; }
+.lk-left { justify-self: end; padding: 0 56px 0 24px; text-align: right; }
+.lk-logo { display: flex; align-items: center; justify-content: flex-end; gap: 14px; }
+.lk-flag { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; width: 54px; height: 54px; transform: skewY(-6deg) rotate(-2deg); }
+.lk-flag i { display: block; border-radius: 3px 8px 3px 8px; }
+.lk-flag i:nth-child(1) { background: #f35325; } .lk-flag i:nth-child(2) { background: #81bc06; }
+.lk-flag i:nth-child(3) { background: #05a6f0; } .lk-flag i:nth-child(4) { background: #ffba08; }
+.lk-brand { font: italic 700 clamp(34px, 5vw, 56px)/1 "Trebuchet MS", sans-serif; text-shadow: 2px 3px 0 rgba(0,0,40,.35); }
+.lk-brand b { color: #ff8a1f; font-size: .7em; vertical-align: top; position: relative; top: -.15em; margin-left: 2px; }
+.lk-begin { margin: 22px 0 0; font-size: clamp(15px, 2vw, 20px); font-style: italic; color: #dbe4ff; }
+
+.lk-sep { align-self: stretch; margin: 6vh 0; background: linear-gradient(transparent, #c3d1ff 50%, transparent); }
+
+.lk-right { justify-self: start; padding: 0 24px 0 56px; }
+
+/* kartu pengguna */
+.lk-user {
+  all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 16px; padding: 10px 28px 10px 10px; border-radius: 8px; cursor: pointer;
+  border: 2px solid transparent; transition: background .15s;
+}
+.lk-user:hover, .lk-user.on { background: linear-gradient(90deg, #2c52b8, rgba(44,82,184,0)); }
+.lk-user:focus-visible { outline: 2px dotted #fff; outline-offset: 2px; }
+.lk-pic {
+  width: 70px; height: 70px; border-radius: 8px; border: 3px solid #e8e8f4; background: linear-gradient(#bfe0ff, #7fc66a); font-size: 42px; line-height: 64px; text-align: center;
+  box-shadow: 0 0 0 1px #6f8bd8, 2px 3px 6px rgba(0,0,60,.4);
+}
+.lk-user:hover .lk-pic, .lk-user.on .lk-pic { border-color: #ffd36a; }
+.lk-name { font-size: clamp(20px, 2.6vw, 26px); font-weight: 700; text-shadow: 1px 2px 0 rgba(0,0,60,.4); word-break: break-all; }
+.lk-click { margin: 6px 0 0 100px; font-size: 13px; color: #cdd9ff; font-style: italic; animation: lkPulse 2.6s ease-in-out infinite; }
+
+/* kolom nama */
+.lk-pw { margin: 6px 0 0 96px; animation: lkIn .3s ease both; }
+.lk-pw p { margin: 0 0 6px; font-size: 13px; color: #e4eaff; }
+.lk-pw small { display: block; margin-top: 8px; font-size: 11px; color: #cdd9ff; font-style: italic; }
+.lk-row { display: flex; align-items: center; gap: 6px; }
+.lk-row input {
+  width: min(190px, 50vw); height: 28px; box-sizing: border-box; padding: 0 8px; border: 1px solid #00309c; border-radius: 3px; outline: 0; font: 14px Tahoma, sans-serif; color: #000; background: #fff;
+}
+.lk-row input:focus { box-shadow: 0 0 0 2px #ffd36a; }
+.lk-row button {
+  all: unset; width: 28px; height: 28px; box-sizing: border-box; text-align: center; line-height: 25px; font-size: 18px; font-weight: 700; color: #fff; cursor: pointer;
+  background: linear-gradient(#6fcf5b, #2f9a2a); border: 2px solid #fff; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,.4);
+}
+.lk-row button:hover { filter: brightness(1.1); } .lk-row button:active { filter: brightness(.9); }
+.lk-row button:focus-visible { outline: 2px dotted #fff; outline-offset: 2px; }
+
+/* pita bawah */
+.lk-foot { position: absolute; left: 0; right: 0; bottom: 0; height: 13vh; min-height: 78px; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; gap: 16px; }
+.lk-off { all: unset; display: inline-flex; align-items: center; gap: 10px; font-size: clamp(13px, 1.8vw, 17px); cursor: pointer; }
+.lk-off span { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 6px; background: linear-gradient(#f0765a, #c8301a); border: 2px solid #fff; font-size: 17px; }
+.lk-off:hover { text-decoration: underline; } .lk-off:focus-visible { outline: 2px dotted #fff; outline-offset: 4px; }
+.lk-foot-r { max-width: 30ch; text-align: right; font-size: clamp(11px, 1.5vw, 14px); color: #dbe4ff; }
+
+/* layar "welcome" */
+.lk-wel { flex: 1; display: grid; place-content: center; text-align: center; background: inherit; animation: lkIn .6s ease both; }
+.lk-wel p { margin: 0; font: italic 400 clamp(40px, 7vw, 68px)/1.1 "Trebuchet MS", sans-serif; text-shadow: 2px 3px 0 rgba(0,0,60,.4); }
+.lk-wel small { margin-top: 14px; font-size: 15px; color: #dbe4ff; letter-spacing: .08em; }
+
+@keyframes lkIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lkPulse { 50% { opacity: .35; } }
+
+@media (max-width: 640px) {
+  .lk-main { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; align-content: center; gap: 10px; padding-bottom: 14vh; }
+  .lk-sep { display: none; }
+  .lk-left { justify-self: center; text-align: center; padding: 0 16px; }
+  .lk-logo { justify-content: center; }
+  .lk-flag { width: 40px; height: 40px; }
+  .lk-right { justify-self: center; padding: 0 16px; }
+  .lk-click, .lk-pw { margin-left: 16px; }
+  .lk-foot-r { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .lk, .lk * { animation: none !important; transition: none !important; } }

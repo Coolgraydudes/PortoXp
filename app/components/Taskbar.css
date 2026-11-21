@@ -1,0 +1,116 @@
+/* Taskbar + menu Start + dialog Run / Shut Down */
+.tb {
+  position: fixed; left: 0; right: 0; bottom: 0; height: 32px; z-index: 8; box-sizing: border-box;
+  display: flex; align-items: center; gap: 4px; padding: 2px 3px;
+  background: #e4e6ea; border-top: 1px solid #fff; box-shadow: 0 -1px 0 #c8ccd2;
+  font: 12px Tahoma, "MS Sans Serif", sans-serif; color: #000; user-select: none;
+}
+.tb button { font: 12px Tahoma, "MS Sans Serif", sans-serif; color: #000; cursor: inherit; }
+
+.tb-start {
+  display: flex; align-items: center; gap: 6px; flex: none; height: 26px; padding: 0 9px 0 6px; font-weight: bold;
+  background: #e4e6ea; border: 2px solid; border-color: #fff #404040 #404040 #fff;
+}
+.tb-start.on { border-color: #404040 #fff #fff #404040; background: #f2f3f5; }
+.tb-flag { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; width: 15px; height: 15px; }
+.tb-flag i { display: block; }
+.tb-flag i:nth-child(1) { background: #e0412f; }
+.tb-flag i:nth-child(2) { background: #3aa655; }
+.tb-flag i:nth-child(3) { background: #2f6fd6; }
+.tb-flag i:nth-child(4) { background: #f2c230; }
+.tb-div { flex: none; width: 2px; height: 22px; border-left: 1px solid #8a8f98; border-right: 1px solid #fff; }
+
+.tb-wins { display: flex; flex: 1; min-width: 0; gap: 3px; overflow: hidden; }
+.tb-win {
+  display: flex; align-items: center; gap: 5px; flex: 0 1 160px; min-width: 34px; height: 26px; padding: 0 6px; overflow: hidden;
+  text-align: left; background: #e4e6ea; border: 2px solid; border-color: #fff #404040 #404040 #fff;
+}
+.tb-win img, .tb-win .w98-emoji { flex: none; }
+.tb-win span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tb-win.act { font-weight: bold; background: #f2f3f5; border-color: #404040 #fff #fff #404040; }
+
+.tb-tray {
+  display: flex; align-items: center; flex: none; gap: 8px; height: 26px; padding: 0 8px; box-sizing: border-box;
+  border: 1px solid; border-color: #8a8f98 #fff #fff #8a8f98;
+}
+.tb-kin {
+  width: 18px; height: 19px; padding: 0; border: 0; background: url("/pet/kinoko.webp") 0 0 / 108px 56.6px no-repeat transparent;
+}
+.tb-kin:hover { filter: brightness(1.12); }
+.tb-clock { min-width: 34px; text-align: center; }
+
+/* menu Start */
+.tb-menu {
+  position: fixed; left: 2px; bottom: 33px; z-index: 12; display: flex; background: #e4e6ea;
+  border: 2px solid; border-color: #fff #404040 #404040 #fff; box-shadow: 3px 3px 0 rgba(0,0,0,.35);
+  font: 13px Tahoma, "MS Sans Serif", sans-serif; color: #000; user-select: none;
+}
+.tb-banner { position: relative; flex: none; width: 28px; background: linear-gradient(0deg, #0a246a, #3a6ea5); }
+.tb-banner span {
+  position: absolute; left: 0; bottom: 8px; padding: 0 4px; color: #fff; font: bold 19px Tahoma, sans-serif; letter-spacing: 1px;
+  writing-mode: vertical-rl; transform: rotate(180deg);
+}
+.tb-menu > ul { margin: 0; padding: 2px; list-style: none; min-width: 190px; }
+.tb-it { position: relative; display: flex; align-items: center; gap: 10px; padding: 5px 8px 5px 6px; cursor: inherit; white-space: nowrap; }
+.tb-it:hover, .tb-it.on { background: #0a246a; color: #fff; }
+.tb-it > i { margin-left: auto; padding-left: 14px; font-style: normal; font-size: 8px; }
+.tb-it img, .tb-it .w98-emoji { flex: none; width: auto; }
+.tb-it .w98-emoji { display: inline-block; text-align: center; min-width: 1.2em; }
+.tb-sep { height: 0; margin: 3px 2px; border-top: 1px solid #8a8f98; border-bottom: 1px solid #fff; }
+.tb-subm {
+  position: absolute; left: calc(100% - 4px); bottom: -3px; z-index: 1; margin: 0; padding: 2px; list-style: none; min-width: 170px;
+  background: #e4e6ea; border: 2px solid; border-color: #fff #404040 #404040 #fff; box-shadow: 3px 3px 0 rgba(0,0,0,.35); color: #000;
+}
+.tb-subm .tb-it { color: #000; }
+.tb-subm .tb-it:hover { background: #0a246a; color: #fff; }
+
+/* dialog */
+.tb-dlg {
+  position: fixed; left: 50%; top: 40%; transform: translate(-50%, -50%); z-index: 14; width: min(350px, 92vw); box-sizing: border-box;
+  padding: 2px; background: #e4e6ea; border: 1px solid #8a8f98; box-shadow: inset 1px 1px #fff, 4px 4px 0 rgba(0,0,0,.35);
+  font: 12px Tahoma, "MS Sans Serif", sans-serif; color: #000;
+}
+.tb-dlg-t { display: flex; align-items: center; justify-content: space-between; padding: 3px 3px 3px 6px; color: #fff; font-weight: bold; background: linear-gradient(90deg, #0a246a, #3a6ea5); }
+.tb-dlg-t button {
+  width: 16px; height: 14px; padding: 0; font: bold 11px/1 Tahoma, sans-serif; color: #000; background: #e4e6ea;
+  border: 1px solid #8a8f98; box-shadow: inset 1px 1px #fff; cursor: inherit;
+}
+.tb-dlg-b { padding: 12px 14px 12px; }
+.tb-dlg-b p { margin: 0 0 10px; line-height: 1.45; }
+.tb-run { display: flex; align-items: center; gap: 8px; }
+.tb-run input {
+  flex: 1; min-width: 0; padding: 3px 4px; background: #fff; border: 1px solid #8a8f98; box-shadow: inset 1px 1px #9aa0a8;
+  outline: none; font: 12px Tahoma, sans-serif;
+}
+.tb-radio { display: block; margin: 4px 0; }
+.tb-err { margin: 10px 0 0 !important; color: #a00000; }
+.tb-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+.tb-row button {
+  min-width: 74px; padding: 3px 12px; color: #000; background: #e4e6ea; border: 1px solid #8a8f98; box-shadow: inset 1px 1px #fff;
+  font: 12px Tahoma, sans-serif; cursor: inherit;
+}
+.tb-row button:active { box-shadow: inset 1px 1px #8a8f98; }
+
+/* layar shut down */
+.sd {
+  position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 24px; box-sizing: border-box; background: #000; color: #ffa000; text-align: center;
+  font: 20px/1.5 "Lucida Console", "Courier New", monospace; cursor: default;
+}
+.sd p { margin: 0; }
+.sd[data-p="closing"] { animation: sdIn .9s ease forwards; }
+.sd[data-p="booting"] { animation: sdOut 1.5s ease forwards; }
+.sd-hint { margin-top: 36px !important; font-size: 12px; color: #6b4300; }
+.sd-ghost { margin-top: 26px !important; font-size: 13px; color: #7a4c00; opacity: 0; animation: sdGhost 3s ease 5s forwards; }
+@keyframes sdIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sdOut { 0%, 45% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes sdGhost { to { opacity: 1; } }
+
+@media (max-width: 480px) {
+  .tb-win { flex-basis: 34px; padding: 0 5px; }
+  .tb-win span { display: none; }
+  .tb-menu > ul { min-width: 160px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sd[data-p="closing"], .sd[data-p="booting"] { animation-duration: .01s; }
+}

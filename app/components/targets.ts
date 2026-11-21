@@ -10,9 +10,11 @@ export type OpenTarget =
   | { kind: "folder"; title: string; path: string[]; drive?: boolean } // buka File Explorer di folder itu
   | { kind: "file"; path: string[] } // buka file (teks / gambar)
   | { kind: "messenger" }
+  | { kind: "kinoko" } // panggil Kinoko kalau sudah di-install, kalau belum buka halaman download di Internet Explorer
+  | { kind: "text"; title: string; text: string } // jendela teks sederhana (mis. help.txt)
   | { kind: "closeAll" };
 
-type Def = { name: string; desc: string; t: OpenTarget; alias: string[] };
+type Def = { name: string; desc: string; t: OpenTarget; alias: string[]; hidden?: boolean }; // hidden = tidak diberitahukan ke AI
 
 const DOCS = ["Desktop", "My Documents"];
 const C = ["Desktop", "My Computer", "Local Disk (C:)"];
@@ -43,11 +45,37 @@ export const TARGETS: Record<string, Def> = {
   // sengaja tanpa alias: perintah langsung tidak membukanya. Hanya lewat AI, yang akan ragu-ragu dulu.
   "night-picture": { name: "the night picture", desc: "the night picture (Midnight Hill's Hidden Watcher.png)", t: { kind: "file", path: [...C, "Pictures", "Midnight Hill's Hidden Watcher.png"] }, alias: [] },
 
+  kinoko: { name: "Kinoko", desc: "Kinoko itself", t: { kind: "kinoko" }, alias: ["kinoko", "kinoko.exe"], hidden: true },
+  help: {
+    name: "help.txt",
+    desc: "the help.txt window with tips on how to use this computer",
+    t: {
+      kind: "text",
+      title: "help.txt",
+      text: [
+        "HELP",
+        "",
+        "- double-click an icon to open it.",
+        "- drag a window by its title bar. double-click the title bar to maximize it.",
+        "- the _ button hides a window. click its button on the taskbar to bring it back.",
+        "- type /msg in the search bar to talk to the one in the window.",
+        "- download Kinoko from Internet Explorer. then click Kinoko to talk to it.",
+        "- you can ask Kinoko to open things for you.",
+        "- Start > Run... opens things by name.",
+        "- Start > Shut Down when you are done. or don't.",
+        "",
+        "- if the screen goes dark, that's normal.",
+      ].join("\n"),
+    },
+    alias: ["help", "bantuan"],
+  },
+
   "close-all": { name: "everything", desc: "closes every open window", t: { kind: "closeAll" }, alias: ["close all", "tutup semua", "tutup semuanya"] },
 };
 
 /** Daftar id untuk dimasukkan ke prompt AI. */
 export const TARGET_PROMPT = Object.entries(TARGETS)
+  .filter(([, d]) => !d.hidden)
   .map(([id, d]) => `- ${id}: ${d.desc}`)
   .join("\n");
 
@@ -89,4 +117,19 @@ export function localCommand(text: string): { id: string; line: string } | null 
       ? indo ? "oke, aku tutup semuanya." : "okay. closing everything."
       : indo ? `oke, aku bukain ${name}.` : `okay. opening ${name}.`;
   return { id, line };
+}
+
+// ---- Start > Run...: ketik id atau nama ("my documents", "readme.txt", "kinoko.exe", "iexplore") ----
+const RUN_EXTRA: Record<string, string> = { iexplore: "internet-explorer", explorer: "my-computer", notepad: "readme", msn: "messenger" };
+
+export function resolveRun(text: string): string | null {
+  const t = text.trim().toLowerCase().replace(/^["']|["']$/g, "");
+  if (!t) return null;
+  if (TARGETS[t] && t !== "night-picture") return t; // id persis
+  const bare = t.replace(/\.exe$/, "");
+  if (RUN_EXTRA[bare]) return RUN_EXTRA[bare];
+  const exact = ALIASES.find((a) => a.alias === t || a.alias === bare);
+  if (exact) return exact.id;
+  const byName = Object.entries(TARGETS).find(([id, d]) => id !== "night-picture" && d.name.toLowerCase() === t);
+  return byName ? byName[0] : null;
 }

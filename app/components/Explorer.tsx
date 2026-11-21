@@ -42,10 +42,12 @@ function TreeNode({ node, path, cur, open, toggle, go, depth }: TreeProps) {
   );
 }
 
-export default function Explorer({ w, onFocus, onClose, onOpenFile }: {
+export default function Explorer({ w, onFocus, onClose, onOpenFile, minimized, onMinimize }: {
   w: { id: number; x: number; y: number; z: number; explorer?: string[]; compact?: boolean };
   onFocus: () => void;
   onClose: () => void;
+  minimized?: boolean;
+  onMinimize?: () => void;
   onOpenFile: (f: FsNode) => void;
 }) {
   const start = w.explorer ?? ["Desktop"];
@@ -89,6 +91,8 @@ export default function Explorer({ w, onFocus, onClose, onOpenFile }: {
       onFocus={onFocus}
       onClose={onClose}
       onOpenFile={() => {}}
+      minimized={minimized}
+      onMinimize={onMinimize}
       menu={["File", "Edit", "View", "Favorites", "Tools", "Help"]}
       size={[640, 440]}
     >

@@ -30,6 +30,7 @@ export function emit(ev: string, data?: unknown) {
    "chat:user"       pengunjung kirim pesan di Messenger   { text }
    "chat:reply"      balasan masuk di Messenger            { text }
    "messenger:open"  minta Messenger dibuka (dari Kinoko)
+   "sys:lock"        tampilkan layar login lagi (Restart / Log Off)
 */
 
 // ---- status install (disimpan di localStorage, jadi Kinoko tetap ada waktu halaman di-refresh) ----
@@ -60,6 +61,12 @@ export function setInstalled(v: boolean) {
     /* localStorage bisa saja diblokir; tidak apa-apa, status tetap hidup selama tab terbuka */
   }
   listeners.forEach((l) => l());
+}
+
+/** Cek status install tanpa hook (untuk dipakai di dalam fungsi/event). */
+export function isPetInstalled() {
+  hydrate();
+  return installed;
 }
 
 /** Sekali pakai: true kalau Kinoko baru di-install barusan. */

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { emit, on, takeFresh, usePetInstalled } from "./bus";
 import { findTag, localCommand, stripTags } from "./targets";
+import { TB_H } from "./wm";
 import "./KinokoPet.css";
 
 /* ============================================================
@@ -151,7 +152,7 @@ function Pet() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const top = Math.max(vh * 0.7, 260);
-    const bot = vh - 16;
+    const bot = vh - 16 - TB_H;
     const fresh = takeFresh();
     s.x = fresh ? rand(vw * 0.25, vw * 0.55) : rand(FW, vw - FW);
     s.land = rand(top + 10, bot - 6);
@@ -192,7 +193,7 @@ function Pet() {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const top = Math.max(vh * 0.7, 260);
-      const bot = vh - 16;
+      const bot = vh - 16 - TB_H;
       s.t += dt;
       s.ftime += dt;
       if (s.mode === "idle" || s.mode === "walk" || s.mode === "look") s.quiet += dt; // lama tidak disentuh
@@ -399,7 +400,7 @@ function Pet() {
     if (d.moved) {
       const vh = window.innerHeight;
       const top = Math.max(vh * 0.7, 260);
-      const bot = vh - 16;
+      const bot = vh - 16 - TB_H;
       s.land = clamp(s.y, top, bot);
       s.vy = 0;
       if (s.y >= s.land) {

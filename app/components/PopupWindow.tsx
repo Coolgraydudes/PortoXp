@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type CSSProperties } from "react";
+import { TB_H } from "./wm";
 import "./PopupWindow.css";
 
 type FileItem = { name: string; icon: string; text: string; image?: string; size?: string };
@@ -24,7 +25,7 @@ export function Ico({ src, size }: { src: string; size: number }) {
   );
 }
 
-export default function PopupWindow({ w, onFocus, onClose, onOpenFile, children, menu, size }: {
+export default function PopupWindow({ w, onFocus, onClose, onOpenFile, children, menu, size, minimized, onMinimize }: {
   w: WinData;
   onFocus: () => void;
   onClose: () => void;
@@ -32,6 +33,8 @@ export default function PopupWindow({ w, onFocus, onClose, onOpenFile, children,
   children?: React.ReactNode;
   menu?: string[];
   size?: [number, number];
+  minimized?: boolean; // disembunyikan (tombol di taskbar masih ada)
+  onMinimize?: () => void;
 }) {
   const [box, setBox] = useState<Box>(() => {
     const vw = typeof window === "undefined" ? 1024 : window.innerWidth;
@@ -56,8 +59,9 @@ export default function PopupWindow({ w, onFocus, onClose, onOpenFile, children,
       : w.title;
   const path = w.title === "My Computer" ? "My Computer" : `C:\\${w.title}`;
   const style: CSSProperties = max
-    ? { left: 0, top: 0, width: "100%", height: "100%", zIndex: w.z }
+    ? { left: 0, top: 0, width: "100%", height: `calc(100% - ${TB_H}px)`, zIndex: w.z }
     : { left: box.x, top: box.y, width: box.width, height: box.height, zIndex: w.z };
+  if (minimized) style.display = "none"; // sengaja tidak di-unmount supaya isi jendela (mis. unduhan, folder) tetap utuh
 
   const resizeMove = (e: React.PointerEvent) => {
     const r = rs.current;
@@ -103,6 +107,7 @@ export default function PopupWindow({ w, onFocus, onClose, onOpenFile, children,
       >
         <span className="w98-name"><Ico src={w.icon} size={14} />{title}</span>
         <span className="w98-btns" onPointerDown={(e) => e.stopPropagation()} onDoubleClick={(e) => e.stopPropagation()}>
+          {onMinimize && <button aria-label="Minimize" onClick={onMinimize}>_</button>}
           <button aria-label="Maximize" onClick={() => setMax(!max)}>{max ? "❐" : "□"}</button>
           <button aria-label="Close" onClick={onClose}>×</button>
         </span>

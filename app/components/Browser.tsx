@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { emit, setInstalled, usePetInstalled } from "./bus";
+import { emit, on, setInstalled, usePetInstalled } from "./bus";
 import "./Browser.css";
 
 // "Internet" mini: beberapa halaman palsu. Yang penting ada di halaman Kinoko (download).
@@ -44,11 +44,11 @@ type Dl =
 
 const SIZE_KB = 1240;
 
-export default function Browser() {
+export default function Browser({ initial = "home" }: { initial?: "home" | "kinoko" }) {
   const installed = usePetInstalled();
-  const [hist, setHist] = useState<{ page: PageId; bad?: string }[]>([{ page: "home" }]);
+  const [hist, setHist] = useState<{ page: PageId; bad?: string }[]>([{ page: initial }]);
   const [idx, setIdx] = useState(0);
-  const [addr, setAddr] = useState(URLS.home);
+  const [addr, setAddr] = useState(URLS[initial]);
   const [loading, setLoading] = useState(false);
   const [dl, setDl] = useState<Dl>(null);
   const loadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -69,6 +69,18 @@ export default function Browser() {
     setIdx(h.length - 1);
     show(h.length - 1, h);
   };
+
+  // dipanggil dari luar (mis. Start > Programs > Kinoko) waktu jendela IE sudah terbuka
+  const goRef = useRef(go);
+  goRef.current = go;
+  useEffect(
+    () =>
+      on("browser:go", (d) => {
+        const page = (d as { page?: string } | undefined)?.page;
+        if (page === "home" || page === "kinoko") goRef.current(page);
+      }),
+    []
+  );
 
   const navigate = (raw: string) => {
     const page = resolve(raw);
